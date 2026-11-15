@@ -30,7 +30,7 @@ export function Hero() {
 
         <div className="flex flex-col gap-6 md:col-span-5 md:col-start-8">
           <div className="flex flex-wrap gap-3">
-            <Button href="#early-access">Get early access</Button>
+            <Button href="/demo">Try it on your bills →</Button>
             <Button href="#ai-at-work" variant="outline">
               See the AI read a bill
             </Button>

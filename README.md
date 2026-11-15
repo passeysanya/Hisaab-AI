@@ -20,6 +20,15 @@ npm run dev                          # http://localhost:3000
 | `npm run lint` | ESLint (next/core-web-vitals) |
 | `npm test` | Vitest unit tests |
 
+## Live demo (`/demo`)
+Upload up to 5 bills, or use 3 watermarked sample bills with pre-computed results. You get "Your Hisaab":
+- every extracted field, with a confidence score and the AI's notes
+- GSTIN checksum and arithmetic checks
+- cross-bill flags for duplicates and price rises
+- CSV export
+
+Extraction tries `GEMINI_MODEL` first. On a 429 / quota error it moves to `GEMINI_FALLBACK_MODEL`, and then to offline Tesseract.js OCR. Uploads are processed in memory and never stored. The API is rate limited to 5 runs per hour per IP, in memory.
+
 ## Roadmap
 1. ✅ Landing page
 2. Data model + seed data

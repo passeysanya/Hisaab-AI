@@ -1,9 +1,9 @@
 import Link from "next/link";
 
 const links = [
-  { href: "#how-it-works", label: "How it works" },
-  { href: "#ai-at-work", label: "AI at work" },
-  { href: "#flags", label: "Flags" },
+  { href: "/#how-it-works", label: "How it works" },
+  { href: "/#ai-at-work", label: "AI at work" },
+  { href: "/#flags", label: "Flags" },
 ];
 
 export function Header() {
@@ -23,12 +23,12 @@ export function Header() {
           </a>
         ))}
       </nav>
-      <a
-        href="#early-access"
+      <Link
+        href="/demo"
         className="border border-ink px-4 py-2 text-xs font-semibold uppercase tracking-label hover:border-accent hover:bg-accent hover:text-paper"
       >
-        Early access
-      </a>
+        Try the demo
+      </Link>
     </header>
   );
 }

@@ -8,7 +8,7 @@ bill against purchase orders, and flags duplicates or price increases.
 ## Stack
 - Next.js 14 (App Router) + TypeScript + Tailwind CSS
 - Prisma ORM, SQLite for local dev (Postgres in production)
-- Anthropic API for document extraction (model name read from env var ANTHROPIC_MODEL)
+- Google Gemini API free tier (GEMINI_MODEL, fallback GEMINI_FALLBACK_MODEL), then offline Tesseract.js OCR; Claude provider stubbed for later
 - Zod for validating all AI output
 
 ## Design system (apply to every page)

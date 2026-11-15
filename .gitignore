@@ -18,6 +18,10 @@ build/
 *.db-journal
 prisma/*.db*
 
+# OCR language data cache (Tesseract.js)
+.cache/
+*.traineddata
+
 # Testing
 coverage/
 

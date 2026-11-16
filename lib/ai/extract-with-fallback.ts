@@ -1,3 +1,4 @@
+import { BrowserOcrHandoff } from "../ocr/handoff";
 import { parseExtraction } from "./invoice-schema";
 import { isQuotaError } from "./is-quota-error";
 import type { Attempt, ExtractInput, ExtractionOutcome, Extractor } from "./types";
@@ -9,6 +10,7 @@ function message(err: unknown): string {
 
 /**
  * Runs extractors in order (primary model -> fallback model -> offline OCR).
+ * Images that reach OCR come back with `handoff: "browser-ocr"` for the browser to finish.
  * Moves to the next one ONLY on quota / 429 errors; any other failure is returned
  * as an error so it isn't silently masked by a worse extractor.
  *
@@ -37,6 +39,10 @@ export async function extractWithFallback(
       attempts.push({ ...base, ok: true, ms: Date.now() - started });
       return { ok: true, extraction, extractedBy: ex.label, kind: ex.kind, attempts };
     } catch (err) {
+      if (err instanceof BrowserOcrHandoff) {
+        // Not a failure: the browser finishes this bill with Tesseract.js.
+        return { ok: false, error: "Waiting for in-browser OCR", attempts, handoff: "browser-ocr" };
+      }
       const quota = isQuotaError(err);
       attempts.push({ ...base, ok: false, quota, error: message(err), ms: Date.now() - started });
       if (quota) {

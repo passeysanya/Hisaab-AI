@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
+import { BrowserOcrHandoff } from "../ocr/handoff";
 import { extractBatch, extractWithFallback } from "./extract-with-fallback";
 import type { ExtractInput, Extractor } from "./types";
 
@@ -54,6 +55,16 @@ describe("extractWithFallback", () => {
   it("treats malformed AI output as an error, not a fallback", async () => {
     const r = await extractWithFallback(input, [ex("primary", async () => "not json")]);
     expect(!r.ok && r.error).toMatch(/not valid JSON/);
+  });
+
+  it("hands images to the browser when they reach OCR, keeping the quota trail", async () => {
+    const r = await extractWithFallback(input, [
+      ex("primary", async () => { throw quota; }),
+      ex("offline-ocr", async () => { throw new BrowserOcrHandoff(); }, "ocr"),
+    ]);
+    expect(r.ok).toBe(false);
+    expect(!r.ok && r.handoff).toBe("browser-ocr");
+    expect(r.attempts.map((a) => a.extractor)).toEqual(["primary"]);
   });
 
   it("reports when every extractor is out of quota", async () => {

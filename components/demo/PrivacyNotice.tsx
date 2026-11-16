@@ -15,7 +15,10 @@ export function PrivacyNotice() {
           <strong className="text-ink">don&apos;t upload bills with sensitive data</strong>. Use the sample bills
           instead.
         </li>
-        <li>If Gemini is out of quota, bills are read on this server by offline OCR and go nowhere else.</li>
+        <li>
+          If Gemini is out of quota, photos are read by OCR <strong className="text-ink">in your own browser</strong>, and
+          PDFs from their text layer on the server. Neither goes anywhere else.
+        </li>
         <li>Results stay in this browser tab only and disappear when you close it.</li>
       </ul>
     </aside>

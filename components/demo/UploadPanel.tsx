@@ -32,7 +32,7 @@ export function UploadPanel({ files, onChange, onSubmit, busy }: Props) {
       <Label accent>Option B · live AI</Label>
       <h2 className="mt-3 text-3xl font-bold leading-tight">Upload up to {MAX_BILLS} bills</h2>
       <p className="mt-2 text-sm leading-relaxed text-ink/70">
-        PDF, JPG, PNG or WebP, 5 MB each. Gemini reads them live. Upload two bills from the same vendor to see
+        PDF, JPG, PNG or WebP, 4 MB per run (big photos are shrunk in your browser first). Gemini reads them live. Upload two bills from the same vendor to see
         cross-bill flags.
       </p>
 

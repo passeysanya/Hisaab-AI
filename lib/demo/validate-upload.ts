@@ -1,5 +1,8 @@
 export const MAX_BILLS = 5;
-export const MAX_BILL_BYTES = 5 * 1024 * 1024;
+// Vercel rejects serverless request bodies over 4.5 MB, so one run must stay under that.
+// Large photos are shrunk in the browser before upload (see shrink-image.ts).
+export const MAX_UPLOAD_BYTES = 4 * 1024 * 1024;
+export const MAX_BILL_BYTES = MAX_UPLOAD_BYTES;
 export const ACCEPTED_TYPES = ["application/pdf", "image/jpeg", "image/png", "image/webp"] as const;
 export type AcceptedType = (typeof ACCEPTED_TYPES)[number];
 
@@ -25,8 +28,12 @@ export function validateUploads(files: UploadCheck[]): string[] {
   const errors: string[] = [];
   for (const f of files) {
     if (f.size === 0) errors.push(`${f.name} is empty.`);
-    else if (f.size > MAX_BILL_BYTES) errors.push(`${f.name} is over 5 MB.`);
+    else if (f.size > MAX_BILL_BYTES) errors.push(`${f.name} is over 4 MB.`);
     else if (!sniffType(f.head)) errors.push(`${f.name} isn't a PDF, JPG, PNG or WebP.`);
+  }
+  const total = files.reduce((s, f) => s + f.size, 0);
+  if (errors.length === 0 && total > MAX_UPLOAD_BYTES) {
+    errors.push(`Together these bills are ${(total / 1024 / 1024).toFixed(1)} MB; one run can take 4 MB. Remove a bill or two.`);
   }
   return errors;
 }

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { MAX_BILL_BYTES, sniffType, validateUploads } from "./validate-upload";
+import { MAX_BILL_BYTES, MAX_UPLOAD_BYTES, sniffType, validateUploads } from "./validate-upload";
 
 const bytes = (...b: number[]) => new Uint8Array([...b, ...new Array(12).fill(0)]);
 const PDF = bytes(0x25, 0x50, 0x44, 0x46);
@@ -39,6 +39,12 @@ describe("validateUploads", () => {
       { ...ok, name: "big.pdf", size: MAX_BILL_BYTES + 1 },
       { name: "fake.pdf", size: 10, head: new TextEncoder().encode("hello world!") },
     ]);
-    expect(errors).toEqual(["empty.pdf is empty.", "big.pdf is over 5 MB.", "fake.pdf isn't a PDF, JPG, PNG or WebP."]);
+    expect(errors).toEqual(["empty.pdf is empty.", "big.pdf is over 4 MB.", "fake.pdf isn't a PDF, JPG, PNG or WebP."]);
+  });
+
+  it("rejects a run whose total size is over the Vercel body limit", () => {
+    const big = { ...ok, size: MAX_UPLOAD_BYTES / 2 + 1 };
+    expect(validateUploads([big, big])[0]).toMatch(/one run can take 4 MB/);
+    expect(validateUploads([big])).toEqual([]);
   });
 });

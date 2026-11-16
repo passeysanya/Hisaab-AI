@@ -38,4 +38,10 @@ export type ExtractionOutcome =
       kind: ExtractorKind;
       attempts: Attempt[];
     }
-  | { ok: false; error: string; attempts: Attempt[] };
+  | {
+      ok: false;
+      error: string;
+      attempts: Attempt[];
+      /** Set when the server hands an image to Tesseract.js in the browser. */
+      handoff?: "browser-ocr";
+    };

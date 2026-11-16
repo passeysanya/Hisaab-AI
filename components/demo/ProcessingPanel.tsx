@@ -3,7 +3,16 @@
 import { useEffect, useState } from "react";
 import { Label } from "@/components/ui/Label";
 
-export function ProcessingPanel({ fileNames, chain }: { fileNames: string[]; chain: string[] }) {
+export function ProcessingPanel({
+  fileNames,
+  chain,
+  stage = "ai",
+}: {
+  fileNames: string[];
+  chain: string[];
+  /** "ocr" once the AI is out of quota and Tesseract.js is reading images in this browser. */
+  stage?: "ai" | "ocr";
+}) {
   const [seconds, setSeconds] = useState(0);
   useEffect(() => {
     const t = setInterval(() => setSeconds((s) => s + 1), 1000);
@@ -17,7 +26,9 @@ export function ProcessingPanel({ fileNames, chain }: { fileNames: string[]; cha
           <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-60 motion-reduce:hidden" />
           <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-accent" />
         </span>
-        <Label className="!text-paper/60">AI is reading · {seconds}s</Label>
+        <Label className="!text-paper/60">
+          {stage === "ocr" ? "Offline OCR in your browser" : "AI is reading"} · {seconds}s
+        </Label>
       </div>
       <p className="mt-4 font-display text-3xl font-bold">
         Reading {fileNames.length} bill{fileNames.length > 1 ? "s" : ""}…
@@ -31,7 +42,9 @@ export function ProcessingPanel({ fileNames, chain }: { fileNames: string[]; cha
       </ul>
       <p className="mt-6 text-xs leading-relaxed text-paper/50">
         Bills are read one at a time to respect free-tier limits: {chain.join(" → ")}. This usually takes 3–10
-        seconds per bill. Offline OCR is slower.
+        seconds per bill.
+        {stage === "ocr" &&
+          " Gemini is out of quota, so Tesseract.js is reading the images on this device. The first run downloads its English model (about 10 MB) from a CDN."}
       </p>
     </div>
   );

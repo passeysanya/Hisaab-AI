@@ -18,7 +18,7 @@ export default function DemoPage() {
   const plan = planExtractors(process.env);
   const steps: ChainStepView[] = plan.steps.map((s, i) =>
     s.kind === "ocr"
-      ? { label: "Offline OCR", detail: "Tesseract.js · last resort" }
+      ? { label: "Offline OCR", detail: "Tesseract.js in browser · last resort" }
       : { label: s.model, detail: i === 0 ? `${s.kind} · primary` : `${s.kind} · on 429 / quota` },
   );
 

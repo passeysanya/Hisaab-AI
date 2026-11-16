@@ -71,3 +71,6 @@ export type Report = {
     extractedBy: Record<string, number>;
   };
 };
+
+/** What POST /api/demo/extract returns. */
+export type DemoExtractResponse = { bills: BillInput[]; notes: string[] };

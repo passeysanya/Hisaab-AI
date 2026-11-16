@@ -57,8 +57,8 @@ export async function buildExtractors(env: ExtractorEnv): Promise<{ extractors: 
       const { claudeExtractor } = await import("./providers/claude");
       extractors.push(claudeExtractor(step.model));
     } else {
-      const { offlineOcrExtractor } = await import("../ocr/offline-extract");
-      extractors.push(offlineOcrExtractor());
+      const { serverOcrExtractor } = await import("../ocr/server-ocr");
+      extractors.push(serverOcrExtractor());
     }
   }
   return { extractors, plan };

@@ -2,24 +2,26 @@ import { createHash, randomUUID } from "node:crypto";
 import { NextResponse } from "next/server";
 import { buildExtractors } from "@/lib/ai/build-extractors";
 import { extractBatch } from "@/lib/ai/extract-with-fallback";
-import { buildReport } from "@/lib/demo/build-report";
 import { clientIp, demoLimiter } from "@/lib/demo/rate-limit";
-import type { BillInput } from "@/lib/demo/types";
+import type { BillInput, DemoExtractResponse } from "@/lib/demo/types";
 import { MAX_BILLS, sniffType, validateUploads } from "@/lib/demo/validate-upload";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-export const maxDuration = 120;
+// Vercel Hobby caps functions at 60 s. Bills are read in sequence by Gemini (a few s each);
+// slow image OCR runs in the browser, not here.
+export const maxDuration = 60;
 
 const json = (body: unknown, status = 200, headers: Record<string, string> = {}) =>
   NextResponse.json(body, { status, headers: { "Cache-Control": "no-store", ...headers } });
 
 /**
  * POST multipart/form-data with up to 5 "bills". Files are processed in memory and
- * never written to disk or a database; only the extracted report is returned.
+ * never written to disk or a database. Returns the extracted bills; the browser OCRs
+ * any images handed off to it, then builds "Your Hisaab" with buildReport.
  */
 export async function POST(req: Request) {
-  const limit = demoLimiter.check(clientIp(req.headers));
+  const limit = await demoLimiter().check(clientIp(req.headers));
   if (!limit.allowed) {
     const mins = Math.ceil(limit.retryAfterSec / 60);
     return json(
@@ -67,5 +69,6 @@ export async function POST(req: Request) {
     outcome: outcomes[i],
   }));
 
-  return json(buildReport("live", bills, plan.notes), 200, { "X-RateLimit-Remaining": String(limit.remaining) });
+  const body: DemoExtractResponse = { bills, notes: plan.notes };
+  return json(body, 200, { "X-RateLimit-Remaining": String(limit.remaining) });
 }
